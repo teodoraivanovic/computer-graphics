@@ -1,5 +1,31 @@
-# project_base
-Prazan projekat sa pratećim bibliotekama koje koristimo na času. 
+# Progress bar
+### Mandatory
+- [ ] Week 1
+- [ ] Week 2
+- [ ] Week 3
+- [ ] Week 4
+- [ ] Week 5
+- [ ] Week 6
+- [ ] Week 7
+- [ ] Blending
+- [ ] Face Culling
+- [ ] Advanced Lighting
+
+### Optional
+
+#### Group A:
+- [ ] Framebuffers
+- [ ] Cubemaps
+- [ ] Instancing
+- [ ] Anti Aliasing
+
+#### Group B:
+- [ ] Point Shadows
+- [ ] Normal Mapping, Parallax Mapping
+- [ ] HDR, Bloom
+- [ ] Deffered Shading
+- [ ] SSAO
+
 
 # Uputstvo
 1. `git clone https://github.com/matf-racunarska-grafika/project_base.git`
