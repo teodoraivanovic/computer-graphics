@@ -141,9 +141,9 @@ int main() {
 
     programState = new ProgramState;
     programState->LoadFromFile("resources/program_state.txt");
-    if (programState->ImGuiEnabled) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
+//    if (programState->ImGuiEnabled) {
+//        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+//    }
     // Init Imgui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
