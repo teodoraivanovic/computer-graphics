@@ -47,14 +47,13 @@ struct PointLight {
     float linear;
     float quadratic;
 };
-
 struct ProgramState {
     glm::vec3 clearColor = glm::vec3(0);
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
-    glm::vec3 backpackPosition = glm::vec3(0.0f);
-    float backpackScale = 1.0f;
+    glm::vec3 pozicija = glm::vec3(0.0f);
+    float skaliraj = 1.0f;
     PointLight pointLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
@@ -144,15 +143,15 @@ int main() {
 //    }
 
     // Init Imgui
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void) io;
-
-
-
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330 core");
+//    IMGUI_CHECKVERSION();
+//    ImGui::CreateContext();
+//    ImGuiIO &io = ImGui::GetIO();
+//    (void) io;
+//
+//
+//
+//    ImGui_ImplGlfw_InitForOpenGL(window, true);
+//    ImGui_ImplOpenGL3_Init("#version 330 core");
 
     // configure global opengl state
     // -----------------------------
@@ -160,7 +159,8 @@ int main() {
 
     // build and compile shaders
     // -------------------------
-    //Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
+
+    Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
     float skyboxVertices[] = {
@@ -232,22 +232,42 @@ int main() {
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
 
-    // load models
-    // -----------
-//    Model ourModel("resources/objects/backpack/backpack.obj");
-//    ourModel.SetShaderTextureNamePrefix("material.");
-//
-//    PointLight& pointLight = programState->pointLight;
-//    pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
-//    pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
-//    pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
-//    pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
-//
-//    pointLight.constant = 1.0f;
-//    pointLight.linear = 0.09f;
-//    pointLight.quadratic = 0.032f;
-//
+    // loading all models
+    // -------------------------------------------------------------
 
+    // dobby model
+    Model dobbyModel(FileSystem::getPath("resources/objects/dobby/scene.gltf"));
+    dobbyModel.SetShaderTextureNamePrefix("material.");
+
+    // floating rock model
+    Model rockModel(FileSystem::getPath("resources/objects/floating-rock/scene.gltf"));
+    rockModel.SetShaderTextureNamePrefix("material.");
+
+    // quidditch model
+    Model quidditchModel(FileSystem::getPath("resources/objects/quidditch/quidditch.obj"));
+    quidditchModel.SetShaderTextureNamePrefix("material.");
+
+    // golden snitch model
+    Model goldenSnitchModel(FileSystem::getPath("resources/objects/golden-snitch/scene.gltf"));
+    goldenSnitchModel.SetShaderTextureNamePrefix("material.");
+
+    // castle model
+    Model castleModel(FileSystem::getPath("resources/objects/castle/Hogwarts.obj"));
+    castleModel.SetShaderTextureNamePrefix("material.");
+
+    // phoenix model
+    Model phoenixModel(FileSystem::getPath("resources/objects/phoenix/scene.gltf"));
+    phoenixModel.SetShaderTextureNamePrefix("material.");
+
+
+    PointLight& pointLight = programState->pointLight;
+    pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
+    pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
+    pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
+    pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
+    pointLight.constant = 1.0f;
+    pointLight.linear = 0.0f;
+    pointLight.quadratic = 0.0f;
 
     // draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -267,50 +287,92 @@ int main() {
 
         // render
         // ------
-        //glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glm::mat4 model = glm::mat4(1.0f);
+
+        // don't forget to enable shader before setting uniforms
+        ourShader.use();
+        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+        pointLight.position = glm::vec3(4.0f, 4.0f, 4.0f);
+        ourShader.setVec3("pointLight.position", pointLight.position);
+        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
+        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+        ourShader.setVec3("pointLight.specular", pointLight.specular);
+        ourShader.setFloat("pointLight.constant", pointLight.constant);
+        ourShader.setFloat("pointLight.linear", pointLight.linear);
+        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+        ourShader.setVec3("viewPosition", programState->camera.Position);
+        ourShader.setFloat("material.shininess", 32.0f);
+
         glm::mat4 view = programState->camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
+                                                (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        ourShader.setMat4("view", view);
+        ourShader.setMat4("projection", projection);
 
+        // castle
+        glm::mat4 model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(-15.0f, 0.0f, -5.0f));     // koordinate (x, y, z): y - vertikalna osa
+        model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.00018f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        castleModel.Draw(ourShader);
 
-//        // don't forget to enable shader before setting uniforms
-//        ourShader.use();
-//        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-//        ourShader.setVec3("pointLight.position", pointLight.position);
-//        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
-//        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-//        ourShader.setVec3("pointLight.specular", pointLight.specular);
-//        ourShader.setFloat("pointLight.constant", pointLight.constant);
-//        ourShader.setFloat("pointLight.linear", pointLight.linear);
-//        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-//        ourShader.setVec3("viewPosition", programState->camera.Position);
-//        ourShader.setFloat("material.shininess", 32.0f);
-//        // view/projection transformations
-//        glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
-//                                                (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
-//        glm::mat4 view = programState->camera.GetViewMatrix();
-//        ourShader.setMat4("projection", projection);
-//        ourShader.setMat4("view", view);
-//
-//        // render the loaded model
-//        glm::mat4 model = glm::mat4(1.0f);
-//        model = glm::translate(model,
-//                               programState->backpackPosition); // translate it down so it's at the center of the scene
-//        model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
+        // TODO fix dobby
+        // dobby
+//        model = glm::mat4(1.0f);
+//        model = glm::translate(model, glm::vec3(-16.0f, 10.25f, -11.0f));
+//        model = glm::scale(model, glm::vec3(0.007f));
+//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));  // it's laying on the ground, so it must be rotated
 //        ourShader.setMat4("model", model);
-//        ourModel.Draw(ourShader);
+//        dobbyModel.Draw(ourShader);
 
-        if (programState->ImGuiEnabled)
-            DrawImGui(programState);
+        // rock
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-16.0f, 55.25f, -11.0f));
+        model = glm::translate(model, glm::vec3(0.0f));
+        model = glm::scale(model, glm::vec3(0.37f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        ourShader.setMat4("model", model);
+        rockModel.Draw(ourShader);
+
+        // quidditch
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-1.5f, -10.0f, -6.0f));
+        model = glm::translate(model, glm::vec3(0.0f));
+        model = glm::scale(model, glm::vec3(0.068f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        ourShader.setMat4("model", model);
+        quidditchModel.Draw(ourShader);
+
+        // TODO - dodaj rotiranje i transliranje po kružnici nekom modelu
+
+        // golden snitch
+        model = glm::mat4(1.0f);
+        float yCircle = cos(currentFrame);
+        float zCircle = sin(currentFrame);
+        model = glm::translate(model, glm::vec3(0.0f + 5*yCircle*zCircle, -8.0f + yCircle, -9.5f + 5*zCircle*yCircle));
+        model = glm::scale(model, glm::vec3(0.05f));
+        ourShader.setMat4("model", model);
+        goldenSnitchModel.Draw(ourShader);
+
+        // TODO fix phoenix
+        // phoenix
+//        model = glm::mat4(1.0f);
+//        model = glm::translate(model, glm::vec3(0.0f, 5.0f, -9.5f));
+//        model = glm::scale(model, glm::vec3(0.0005f));
+//        ourShader.setMat4("model", model);
+//        phoenixModel.Draw(ourShader);
+
+
+//        if (programState->ImGuiEnabled)
+//            DrawImGui(programState);
 
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+
+        // skybox
         skyboxShader.use();
         view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix())); // remove translation from the view matrix
-        skyboxShader.setMat4("model", model);
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", projection);
 
@@ -330,9 +392,9 @@ int main() {
 
     programState->SaveToFile("resources/program_state.txt");
     delete programState;
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+//    ImGui_ImplOpenGL3_Shutdown();
+//    ImGui_ImplGlfw_Shutdown();
+//    ImGui::DestroyContext();
 
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVAO);
@@ -404,8 +466,8 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("Hello text");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition);
-        ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
+        ImGui::DragFloat3("Backpack position", (float*)&programState->pozicija);
+        ImGui::DragFloat("Backpack scale", &programState->skaliraj, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);

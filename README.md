@@ -15,7 +15,7 @@
 
 #### Group A:
 - [ ] Framebuffers
-- [ ] Cubemaps
+- [x] Cubemaps
 - [ ] Instancing
 - [ ] Anti Aliasing
 

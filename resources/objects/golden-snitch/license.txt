@@ -1,0 +1,11 @@
+Model Information:
+* title:	Golden Snitch
+* source:	https://sketchfab.com/3d-models/golden-snitch-3a46f2773a2e426d8993947f1a1a26bd
+* author:	KangaroOz 3D (https://sketchfab.com/KangaroOz-3D)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Golden Snitch" (https://sketchfab.com/3d-models/golden-snitch-3a46f2773a2e426d8993947f1a1a26bd) by KangaroOz 3D (https://sketchfab.com/KangaroOz-3D) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
