@@ -1,0 +1,11 @@
+Model Information:
+* title:	Griffin
+* source:	https://sketchfab.com/3d-models/griffin-389459fd5d4e4793b217df27678f4815
+* author:	LunaEagle (https://sketchfab.com/LunaEagle)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Griffin" (https://sketchfab.com/3d-models/griffin-389459fd5d4e4793b217df27678f4815) by LunaEagle (https://sketchfab.com/LunaEagle) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

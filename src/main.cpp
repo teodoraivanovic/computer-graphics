@@ -99,7 +99,7 @@ void DrawImGui(ProgramState *programState);
 
 int main() {
     // glfw: initialize and configure
-    // ------------------------------
+    // ----------------------------------------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -110,7 +110,7 @@ int main() {
 #endif
 
     // glfw window creation
-    // --------------------
+    // ----------------------------------------------------------------
     GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -122,11 +122,13 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
+
     // tell GLFW to capture our mouse
+    // ----------------------------------------------------------------
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
-    // ---------------------------------------
+    // ----------------------------------------------------------------
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
@@ -154,12 +156,16 @@ int main() {
 //    ImGui_ImplOpenGL3_Init("#version 330 core");
 
     // configure global opengl state
-    // -----------------------------
+    // ----------------------------------------------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // build and compile shaders
-    // -------------------------
+    // face culling
+    // ----------------------------------------------------------------
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);    // whatever's in the back won't be rendered
 
+    // build and compile shaders
+    // ----------------------------------------------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
@@ -233,7 +239,7 @@ int main() {
     skyboxShader.setInt("skybox", 0);
 
     // loading all models
-    // -------------------------------------------------------------
+    // ----------------------------------------------------------------
 
     // dobby model
     Model dobbyModel(FileSystem::getPath("resources/objects/dobby/scene.gltf"));
@@ -259,6 +265,9 @@ int main() {
     Model phoenixModel(FileSystem::getPath("resources/objects/phoenix/scene.gltf"));
     phoenixModel.SetShaderTextureNamePrefix("material.");
 
+    // griffin model
+    Model griffinModel(FileSystem::getPath("resources/objects/griffin/scene.gltf"));
+    griffinModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -270,27 +279,28 @@ int main() {
     pointLight.quadratic = 0.0f;
 
     // draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // render loop
-    // -----------
+    // ----------------------------------------------------------------
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
-        // --------------------
+        // ----------------------------------------------------------------
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         // input
-        // -----
+        // ----------------------------------------------------------------
         processInput(window);
 
         // render
-        // ------
+        // ----------------------------------------------------------------
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // don't forget to enable shader before setting uniforms
+        // ----------------------------------------------------------------
         ourShader.use();
         pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
         pointLight.position = glm::vec3(4.0f, 4.0f, 4.0f);
@@ -310,11 +320,13 @@ int main() {
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
 
+        // TODO fix lighting
+
+        // TODO fix castle color
         // castle
         glm::mat4 model = glm::mat4(1.0f);
-        //model = glm::translate(model, glm::vec3(-15.0f, 0.0f, -5.0f));     // koordinate (x, y, z): y - vertikalna osa
-        model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.00018f));    // it's a bit too big for our scene, so scale it down
+        model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));         // koordinate (x, y, z): y - vertikalna osa
+        model = glm::scale(model, glm::vec3(0.00018f));
         ourShader.setMat4("model", model);
         castleModel.Draw(ourShader);
 
@@ -345,8 +357,6 @@ int main() {
         ourShader.setMat4("model", model);
         quidditchModel.Draw(ourShader);
 
-        // TODO - dodaj rotiranje i transliranje po kružnici nekom modelu
-
         // golden snitch
         model = glm::mat4(1.0f);
         float yCircle = cos(currentFrame);
@@ -356,13 +366,23 @@ int main() {
         ourShader.setMat4("model", model);
         goldenSnitchModel.Draw(ourShader);
 
+        // griffin
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(5.0f, 2.2f, 5.5f));
+        model = glm::scale(model, glm::vec3(0.05f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        ourShader.setMat4("model", model);
+        griffinModel.Draw(ourShader);
+
         // TODO fix phoenix
         // phoenix
 //        model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(0.0f, 5.0f, -9.5f));
+//        model = glm::translate(model, glm::vec3(0.0f + yCircle, 5.0f, 5.0f - zCircle));
+//        model = glm::rotate(model, glm::radians(45.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
 //        model = glm::scale(model, glm::vec3(0.0005f));
 //        ourShader.setMat4("model", model);
 //        phoenixModel.Draw(ourShader);
+
 
 
 //        if (programState->ImGuiEnabled)
@@ -385,7 +405,7 @@ int main() {
         glDepthFunc(GL_LESS); // set depth function back to default
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
+        // ----------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -400,7 +420,7 @@ int main() {
     glDeleteBuffers(1, &skyboxVAO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
+    // ----------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
