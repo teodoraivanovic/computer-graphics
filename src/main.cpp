@@ -23,6 +23,7 @@ void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 unsigned int loadCubemap(vector<std::string> faces);
+unsigned int loadTexture(char const *path);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -164,6 +165,11 @@ int main() {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);    // whatever's in the back won't be rendered
 
+    // blending
+    // ----------------------------------------------------------------
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // build and compile shaders
     // ----------------------------------------------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
@@ -268,6 +274,10 @@ int main() {
     // griffin model
     Model griffinModel(FileSystem::getPath("resources/objects/griffin/scene.gltf"));
     griffinModel.SetShaderTextureNamePrefix("material.");
+
+    // willow model
+    Model willowModel(FileSystem::getPath("resources/objects/willow/scene.gltf"));
+    willowModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -374,15 +384,24 @@ int main() {
         ourShader.setMat4("model", model);
         griffinModel.Draw(ourShader);
 
-        // TODO fix phoenix
+        // TODO fix phoenix if possible ?
         // phoenix
-//        model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(0.0f + yCircle, 5.0f, 5.0f - zCircle));
-//        model = glm::rotate(model, glm::radians(45.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-//        model = glm::scale(model, glm::vec3(0.0005f));
-//        ourShader.setMat4("model", model);
-//        phoenixModel.Draw(ourShader);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f - 3*yCircle, 5.0f, 8.0f - 2*zCircle));
+        //model = glm::translate(model, glm::vec3(0.0f, 5.0f, 5.0f));
+        model = glm::rotate(model, glm::radians(17.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(53.3f*currentFrame), glm::vec3(0.0f, -1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.0005f));
+        ourShader.setMat4("model", model);
+        phoenixModel.Draw(ourShader);
 
+        // willow
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-10.0f, -3.4f, 2.5f));
+        model = glm::scale(model, glm::vec3(0.05f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        ourShader.setMat4("model", model);
+        willowModel.Draw(ourShader);
 
 
 //        if (programState->ImGuiEnabled)
@@ -395,8 +414,6 @@ int main() {
         view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix())); // remove translation from the view matrix
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", projection);
-
-        // skybox cube
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
@@ -553,6 +570,42 @@ unsigned int loadCubemap(vector<std::string> faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+
+unsigned int loadTexture(char const *path) {
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
 
     return textureID;
 }

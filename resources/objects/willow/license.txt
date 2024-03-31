@@ -1,0 +1,11 @@
+Model Information:
+* title:	Grandmother Willow
+* source:	https://sketchfab.com/3d-models/grandmother-willow-dded14702cb7421287282b55ea4a12b1
+* author:	Karolyn (https://sketchfab.com/KarolynC)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Grandmother Willow" (https://sketchfab.com/3d-models/grandmother-willow-dded14702cb7421287282b55ea4a12b1) by Karolyn (https://sketchfab.com/KarolynC) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
