@@ -28,6 +28,8 @@ unsigned int loadTexture(char const *path);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+bool blinn = false;
+bool blinnKeyPressed = false;
 
 // camera
 float lastX = SCR_WIDTH / 2.0f;
@@ -263,8 +265,9 @@ int main() {
     Model goldenSnitchModel(FileSystem::getPath("resources/objects/golden-snitch/scene.gltf"));
     goldenSnitchModel.SetShaderTextureNamePrefix("material.");
 
+
     // castle model
-    Model castleModel(FileSystem::getPath("resources/objects/castle/Hogwarts.obj"));
+    Model castleModel(FileSystem::getPath("resources/objects/castle_v2/scene.gltf"));
     castleModel.SetShaderTextureNamePrefix("material.");
 
     // phoenix model
@@ -278,6 +281,10 @@ int main() {
     // willow model
     Model willowModel(FileSystem::getPath("resources/objects/willow/scene.gltf"));
     willowModel.SetShaderTextureNamePrefix("material.");
+
+    // maple tree model
+    Model mapleTreeModel(FileSystem::getPath("resources/objects/maple-tree/scene.gltf"));
+    mapleTreeModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -322,7 +329,9 @@ int main() {
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 32.0f);
+        ourShader.setFloat("material.shininessBP", 32.0f);
+        ourShader.setFloat("material.shininess", 8.0f);
+        ourShader.setInt("blinn", blinn);
 
         glm::mat4 view = programState->camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
@@ -332,11 +341,11 @@ int main() {
 
         // TODO fix lighting
 
-        // TODO fix castle color
         // castle
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));         // koordinate (x, y, z): y - vertikalna osa
-        model = glm::scale(model, glm::vec3(0.00018f));
+        model = glm::scale(model, glm::vec3(0.3f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0, 0.0, 0.0));
         ourShader.setMat4("model", model);
         castleModel.Draw(ourShader);
 
@@ -403,6 +412,34 @@ int main() {
         ourShader.setMat4("model", model);
         willowModel.Draw(ourShader);
 
+        // first maple tree
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-6.0f, 2.2f, -5.8f));
+        model = glm::scale(model, glm::vec3(0.05f));
+        ourShader.setMat4("model", model);
+        mapleTreeModel.Draw(ourShader);
+
+        // second maple tree
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-2.0f, 2.2f, -7.6f));
+        model = glm::scale(model, glm::vec3(0.05f));
+        ourShader.setMat4("model", model);
+        mapleTreeModel.Draw(ourShader);
+
+        // third maple tree
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(2.0f, 2.2f, -7.5f));
+        model = glm::scale(model, glm::vec3(0.05f));
+        ourShader.setMat4("model", model);
+        mapleTreeModel.Draw(ourShader);
+
+        // fourth maple tree
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(6.0f, 2.2f, -5.0f));
+        model = glm::scale(model, glm::vec3(0.05f));
+        ourShader.setMat4("model", model);
+        mapleTreeModel.Draw(ourShader);
+
 
 //        if (programState->ImGuiEnabled)
 //            DrawImGui(programState);
@@ -420,6 +457,8 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
+
+        std::cout << (blinn ? "Blinn-Phong" : "Phong") << std::endl;
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // ----------------------------------------------------------------
@@ -456,6 +495,16 @@ void processInput(GLFWwindow *window) {
         programState->camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         programState->camera.ProcessKeyboard(RIGHT, deltaTime);
+
+    // Blinn-Phong activation
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !blinnKeyPressed) {
+        blinn = !blinn;
+        blinnKeyPressed = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE) {
+        blinnKeyPressed = false;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

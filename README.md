@@ -6,12 +6,12 @@
 - [x] Week 2
 - [x] Week 3
 - [x] Week 4
-- [ ] Week 5
-- [ ] Week 6
+- [x] Week 5
+- [x] Week 6
 - [x] Week 7
 - [x] Blending
 - [x] Face Culling
-- [ ] Advanced Lighting
+- [x] Advanced Lighting
 
 ### Optional
 
@@ -35,6 +35,7 @@
 - WASD to move the camera
 - Mouse movement to rotate the camera
 - Mouse scroll to zoom in/out
+- B to turn on/off Blinn-Phong reflection model
 
 # About course
 

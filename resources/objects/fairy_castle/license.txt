@@ -1,0 +1,11 @@
+Model Information:
+* title:	Fairy Castle
+* source:	https://sketchfab.com/3d-models/fairy-castle-be23215d6e19440bbfb1728e92b06bf5
+* author:	maki_chan (https://sketchfab.com/maki_chan)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Fairy Castle" (https://sketchfab.com/3d-models/fairy-castle-be23215d6e19440bbfb1728e92b06bf5) by maki_chan (https://sketchfab.com/maki_chan) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
