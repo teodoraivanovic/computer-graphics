@@ -279,16 +279,16 @@ int main() {
     griffinModel.SetShaderTextureNamePrefix("material.");
 
     // willow model
-    Model willowModel(FileSystem::getPath("resources/objects/willow/scene.gltf"));
-    willowModel.SetShaderTextureNamePrefix("material.");
+//    Model willowModel(FileSystem::getPath("resources/objects/willow/scene.gltf"));
+//    willowModel.SetShaderTextureNamePrefix("material.");
 
     // maple tree model
     Model mapleTreeModel(FileSystem::getPath("resources/objects/maple-tree/scene.gltf"));
     mapleTreeModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
-    pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
-    pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
+    pointLight.position = glm::vec3(4.0f, 4.0, 4.0);
+    pointLight.ambient = glm::vec3(0.7, 0.7, 0.7);
     pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
     pointLight.constant = 1.0f;
@@ -405,37 +405,37 @@ int main() {
         phoenixModel.Draw(ourShader);
 
         // willow
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-10.0f, -3.4f, 2.5f));
-        model = glm::scale(model, glm::vec3(0.05f));
-        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-        ourShader.setMat4("model", model);
-        willowModel.Draw(ourShader);
+//        model = glm::mat4(1.0f);
+//        model = glm::translate(model, glm::vec3(-10.0f, -3.4f, 2.5f));
+//        model = glm::scale(model, glm::vec3(0.05f));
+//        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+//        ourShader.setMat4("model", model);
+//        willowModel.Draw(ourShader);
 
         // first maple tree
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-6.0f, 2.2f, -5.8f));
+        model = glm::translate(model, glm::vec3(-6.0f, 2.0f, -5.6f));
         model = glm::scale(model, glm::vec3(0.05f));
         ourShader.setMat4("model", model);
         mapleTreeModel.Draw(ourShader);
 
         // second maple tree
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-2.0f, 2.2f, -7.6f));
+        model = glm::translate(model, glm::vec3(-2.0f, 2.0f, -7.3f));
         model = glm::scale(model, glm::vec3(0.05f));
         ourShader.setMat4("model", model);
         mapleTreeModel.Draw(ourShader);
 
         // third maple tree
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f, 2.2f, -7.5f));
+        model = glm::translate(model, glm::vec3(2.0f, 2.0f, -7.2f));
         model = glm::scale(model, glm::vec3(0.05f));
         ourShader.setMat4("model", model);
         mapleTreeModel.Draw(ourShader);
 
         // fourth maple tree
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(6.0f, 2.2f, -5.0f));
+        model = glm::translate(model, glm::vec3(6.0f, 2.0f, -5.0f));
         model = glm::scale(model, glm::vec3(0.05f));
         ourShader.setMat4("model", model);
         mapleTreeModel.Draw(ourShader);
