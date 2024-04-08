@@ -19,7 +19,7 @@
 
 - [ ] Point Shadows
 - [ ] Normal Mapping, Parallax Mapping
-- [ ] HDR, Bloom
+- [x] HDR, Bloom
 - [ ] Deffered Shading
 - [ ] SSAO
 
@@ -29,6 +29,9 @@
 - Mouse movement to rotate the camera
 - Mouse scroll to zoom in/out
 - B to turn on/off Blinn-Phong reflection model
+- Space to turn on/off Bloom
+- E to increase exposure
+- Q to decrease exposure
 
 # About course
 
