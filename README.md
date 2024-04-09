@@ -26,12 +26,14 @@
 # Project manual
 
 - WASD to move the camera
-- Mouse movement to rotate the camera
-- Mouse scroll to zoom in/out
+- mouse movement to rotate the camera
+- mouse scroll to zoom in/out
 - B to turn on/off Blinn-Phong reflection model
-- Space to turn on/off Bloom
-- E to increase exposure
-- Q to decrease exposure
+- SPACE to turn on/off Bloom
+- H to turn on/off HDR
+- G to turn on/off gamma correction
+- E to increase exposure (must enable HDR first)
+- Q to decrease exposure (must enable HDR first)
 
 # About course
 

@@ -23,20 +23,27 @@ void processInput(GLFWwindow *window);
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 unsigned int loadCubemap(vector<std::string> faces);
-unsigned int loadTexture(char const *path, bool gammaCorrection);
+unsigned int loadTexture(char const *path);
+unsigned int loadTexture(char const * path, bool gammaCorrection);
 
 void renderQuad();
+void renderFloor();
 void renderCube();
 
-// settings
+// screen size constants
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+// buttons
 bool blinn = true;
 bool blinnKeyPressed = false;
+bool hdr = false;
+bool hdrKeyPressed = false;
 bool bloom = true;
 bool bloomKeyPressed = false;
 float exposure = 1.0f;
-
+bool gammaOn = false;
+bool gammaKeyPressed = false;
 
 // camera
 float lastX = SCR_WIDTH / 2.0f;
@@ -57,13 +64,14 @@ struct PointLight {
     float linear;
     float quadratic;
 };
+
 struct ProgramState {
     glm::vec3 clearColor = glm::vec3(0);
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
     glm::vec3 pozicija = glm::vec3(0.0f);
-    float skaliraj = 1.0f;
+    float scaleConst = 1.0f;
     PointLight pointLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
@@ -120,7 +128,7 @@ int main() {
 
     // glfw window creation
     // ----------------------------------------------------------------
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "harry potter", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -180,9 +188,14 @@ int main() {
     Shader shaderLight("resources/shaders/bloom.vs", "resources/shaders/light_box.fs");                 // renderuje kocke izvore svetlosti
     Shader shaderBlur("resources/shaders/blur.vs", "resources/shaders/blur.fs");                        // primenjuje blur efekat na
     Shader shaderBloomFinal("resources/shaders/bloom_final.vs", "resources/shaders/bloom_final.fs");    // sve što napravimo renderuje na sam ekran
+    Shader normalShader("resources/shaders/normal_mapping.vs", "resources/shaders/normal_mapping.fs");
+
+    // loading all textures
+    unsigned int diffuseMap = loadTexture(FileSystem::getPath("resources/textures/floor.png").c_str());
+    unsigned int normalMap  = loadTexture(FileSystem::getPath("resources/textures/floor_normal.png").c_str());
+    unsigned int diffuseMapGamma = loadTexture(FileSystem::getPath("resources/textures/floor.png").c_str(), true);
 
     // loading all models
-
     // dobby model
     Model dobbyModel(FileSystem::getPath("resources/objects/dobby/scene.gltf"));
     dobbyModel.SetShaderTextureNamePrefix("material.");
@@ -292,7 +305,7 @@ int main() {
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 4.0);
-    pointLight.ambient = glm::vec3(0.05, 0.05, 0.05);
+    pointLight.ambient = glm::vec3(0.5, 0.5, 0.5);
     pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
     pointLight.constant = 1.0f;
@@ -376,7 +389,12 @@ int main() {
     shaderBloomFinal.setInt("scene", 0);
     shaderBloomFinal.setInt("bloomBlur", 1);
 
-    // TODO after addıng bloom, window can't be maximized
+    normalShader.use();
+    normalShader.setInt("diffuseMap", 0);
+    normalShader.setInt("normalMap", 1);
+
+    // lighting info
+    glm::vec3 lightPos(-2.0f, 3.0f, -9.3f);
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
@@ -514,14 +532,13 @@ int main() {
         shader.setMat4("view", view);
 
         // set lighting uniforms
-        for (unsigned int i = 0; i < lightPositions.size(); i++)
-        {
+        for (unsigned int i = 0; i < lightPositions.size(); i++) {
             shader.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
             shader.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
         }
         shader.setVec3("viewPos", programState->camera.Position);
 
-        // light sources as bright cubes
+        // light sources as white cubes
         shaderLight.use();
         shaderLight.setMat4("projection", projection);
         shaderLight.setMat4("view", view);
@@ -535,7 +552,38 @@ int main() {
             renderCube();
         }
 
-        // skybox
+        glDisable(GL_CULL_FACE);
+
+        // configure view/projection matrices for normalShader
+        projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        view = programState->camera.GetViewMatrix();
+        normalShader.use();
+        normalShader.setMat4("projection", projection);
+        normalShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-9.0f, -3.52f, -1.8f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f)); // rotate the quad to show normal mapping from multiple directions
+        model = glm::scale(model, glm::vec3(3.2f));
+        normalShader.setMat4("model", model);
+        normalShader.setVec3("viewPos", programState->camera.Position);
+        normalShader.setVec3("lightPos", lightPos);
+        normalShader.setInt("gamma", gammaOn);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gammaOn ? diffuseMapGamma : diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, normalMap);
+        renderFloor();
+
+//        // render light source (simply re-renders a smaller plane at the light's position for debugging/visualization)
+//        model = glm::mat4(1.0f);
+//        model = glm::translate(model, lightPos);
+//        model = glm::scale(model, glm::vec3(0.1f));
+//        normalShader.setMat4("model", model);
+//        renderFloor();
+
+        glEnable(GL_CULL_FACE);
+
+        // lastly, render skybox
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
         view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix())); // remove translation from the view matrix
@@ -573,12 +621,11 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
+        shaderBloomFinal.setInt("hdr", hdr);
         shaderBloomFinal.setInt("bloom", bloom);
+        shaderBloomFinal.setInt("gamma", gammaOn);
         shaderBloomFinal.setFloat("exposure", exposure);
         renderQuad();
-
-        std::cout << (blinn ? "Blinn-Phong" : "Phong") << std::endl;
-        std::cout << (bloom ? "Bloom" : "HDR") << std::endl;
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
@@ -633,6 +680,27 @@ void processInput(GLFWwindow *window) {
         bloomKeyPressed = false;
     }
 
+    // hdr activation
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && !hdrKeyPressed) {
+        hdr = !hdr;
+        hdrKeyPressed = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_RELEASE) {
+        hdrKeyPressed = false;
+    }
+
+    // gamma activation
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS && !gammaKeyPressed) {
+        gammaOn = !gammaOn;
+        gammaKeyPressed = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_RELEASE) {
+        gammaKeyPressed = false;
+    }
+
+    // exposure
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         if (exposure > 0.0f) {
             exposure -= 0.007f;
@@ -687,7 +755,7 @@ void DrawImGui(ProgramState *programState) {
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
         ImGui::DragFloat3("Backpack position", (float*)&programState->pozicija);
-        ImGui::DragFloat("Backpack scale", &programState->skaliraj, 0.05, 0.1, 4.0);
+        ImGui::DragFloat("Backpack scale", &programState->scaleConst, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
@@ -763,8 +831,7 @@ unsigned int cubeVBO = 0;
 void renderCube()
 {
     // initialize (if necessary)
-    if (cubeVAO == 0)
-    {
+    if (cubeVAO == 0) {
         float vertices[] = {
                 // back face
                 -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
@@ -809,6 +876,7 @@ void renderCube()
                 -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
                 -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
         };
+
         glGenVertexArrays(1, &cubeVAO);
         glGenBuffers(1, &cubeVBO);
         // fill buffer
@@ -831,13 +899,10 @@ void renderCube()
     glBindVertexArray(0);
 }
 
-
 // renderQuad() renders a 1x1 XY quad in NDC
-// -----------------------------------------
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-void renderQuad()
-{
+void renderQuad() {
     if (quadVAO == 0)
     {
         float quadVertices[] = {
@@ -863,15 +928,104 @@ void renderQuad()
     glBindVertexArray(0);
 }
 
-unsigned int loadTexture(char const * path, bool gammaCorrection)
-{
+// renders a 1x1 quad in NDC with manually calculated tangent vectors
+unsigned int floorVAO = 0;
+unsigned int floorVBO;
+void renderFloor() {
+    if (floorVAO == 0) {
+        // positions
+        glm::vec3 pos1(-1.0f,  1.0f, 0.0f);
+        glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
+        glm::vec3 pos3( 1.0f, -1.0f, 0.0f);
+        glm::vec3 pos4( 1.0f,  1.0f, 0.0f);
+        // texture coordinates
+        glm::vec2 uv1(0.0f, 1.0f);
+        glm::vec2 uv2(0.0f, 0.0f);
+        glm::vec2 uv3(1.0f, 0.0f);
+        glm::vec2 uv4(1.0f, 1.0f);
+        // normal vector
+        glm::vec3 nm(0.0f, 0.0f, 1.0f);
+
+        // calculate tangent/bitangent vectors of both triangles
+        glm::vec3 tangent1, bitangent1;
+        glm::vec3 tangent2, bitangent2;
+        // triangle 1
+        // ----------
+        glm::vec3 edge1 = pos2 - pos1;
+        glm::vec3 edge2 = pos3 - pos1;
+        glm::vec2 deltaUV1 = uv2 - uv1;
+        glm::vec2 deltaUV2 = uv3 - uv1;
+
+        float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+        bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+        // triangle 2
+        // ----------
+        edge1 = pos3 - pos1;
+        edge2 = pos4 - pos1;
+        deltaUV1 = uv3 - uv1;
+        deltaUV2 = uv4 - uv1;
+
+        f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+
+        bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+
+        float quadVertices[] = {
+                // positions            // normal         // texcoords  // tangent                          // bitangent
+                pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+                pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+                pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+
+                pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+                pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+                pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
+        };
+
+        // configure plane VAO
+        glGenVertexArrays(1, &floorVAO);
+        glGenBuffers(1, &floorVBO);
+        glBindVertexArray(floorVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
+    }
+
+    glBindVertexArray(floorVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+}
+
+unsigned int loadTexture(char const * path, bool gammaCorrection) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
     unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data)
-    {
+    if (data) {
         GLenum internalFormat;
         GLenum dataFormat;
         if (nrComponents == 1)
@@ -899,9 +1053,7 @@ unsigned int loadTexture(char const * path, bool gammaCorrection)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
-    }
-    else
-    {
+    } else {
         std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
@@ -909,38 +1061,36 @@ unsigned int loadTexture(char const * path, bool gammaCorrection)
     return textureID;
 }
 
-//unsigned int loadTexture(char const *path) {
-//    unsigned int textureID;
-//    glGenTextures(1, &textureID);
-//
-//    int width, height, nrComponents;
-//    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-//    if (data)
-//    {
-//        GLenum format;
-//        if (nrComponents == 1)
-//            format = GL_RED;
-//        else if (nrComponents == 3)
-//            format = GL_RGB;
-//        else if (nrComponents == 4)
-//            format = GL_RGBA;
-//
-//        glBindTexture(GL_TEXTURE_2D, textureID);
-//        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-//        glGenerateMipmap(GL_TEXTURE_2D);
-//
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//
-//        stbi_image_free(data);
-//    }
-//    else
-//    {
-//        std::cout << "Texture failed to load at path: " << path << std::endl;
-//        stbi_image_free(data);
-//    }
-//
-//    return textureID;
-//}
+
+unsigned int loadTexture(char const * path) {
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data) {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    } else {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
+}
