@@ -54,8 +54,17 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+struct DirLight {
+    glm::vec3 direction;
+
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+};
+
 struct PointLight {
     glm::vec3 position;
+
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
@@ -73,6 +82,7 @@ struct ProgramState {
     glm::vec3 pozicija = glm::vec3(0.0f);
     float scaleConst = 1.0f;
     PointLight pointLight;
+    DirLight dirLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
 
@@ -128,7 +138,7 @@ int main() {
 
     // glfw window creation
     // ----------------------------------------------------------------
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "harry potter", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "computer graphics project", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -228,6 +238,10 @@ int main() {
     Model mapleTreeModel(FileSystem::getPath("resources/objects/maple-tree/scene.gltf"));
     mapleTreeModel.SetShaderTextureNamePrefix("material.");
 
+    // nimbus
+    Model nimbusModel(FileSystem::getPath("resources/objects/nimbus/scene.gltf"));
+    nimbusModel.SetShaderTextureNamePrefix("material.");
+
     // skybox setup
     float skyboxVertices[] = {
             -1.0f,  1.0f, -1.0f,
@@ -311,6 +325,12 @@ int main() {
     pointLight.constant = 1.0f;
     pointLight.linear = 0.0f;
     pointLight.quadratic = 0.0f;
+
+    DirLight& dirLight = programState->dirLight;
+    dirLight.direction = glm::vec3(-4.0f, 0.0f, 0.0f);
+    dirLight.ambient = glm::vec3(0.05f);
+    dirLight.diffuse = glm::vec3(0.4f);
+    dirLight.specular = glm::vec3(0.5f);
 
     // lıght boxes positions
     std::vector<glm::vec3> lightPositions;
@@ -416,8 +436,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ourShader.use();
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-        pointLight.position = glm::vec3(4.0f, 4.0f, 4.0f);
+        pointLight.position = glm::vec3(4.0 * yCircle, 4.0f, 4.0 * zCircle);
+        //pointLight.position = glm::vec3(4.0f, 4.0f, 4.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -425,10 +445,18 @@ int main() {
         ourShader.setFloat("pointLight.constant", pointLight.constant);
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+
         ourShader.setVec3("viewPosition", programState->camera.Position);
+
         ourShader.setFloat("material.shininessBP", 32.0f);
         ourShader.setFloat("material.shininess", 8.0f);
         ourShader.setInt("blinn", blinn);
+
+        ourShader.setVec3("dirLight.direction", dirLight.direction);
+        ourShader.setVec3("dirLight.ambient", dirLight.ambient);
+        ourShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        ourShader.setVec3("dirLight.specular", dirLight.specular);
+
 
         glm::mat4 view = programState->camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -473,7 +501,7 @@ int main() {
         // golden snitch
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f + 5*yCircle*zCircle, -8.0f + yCircle, -9.5f + 5*zCircle*yCircle));
-        model = glm::scale(model, glm::vec3(0.05f));
+        model = glm::scale(model, glm::vec3(0.09f));
         ourShader.setMat4("model", model);
         goldenSnitchModel.Draw(ourShader);
 
@@ -521,6 +549,13 @@ int main() {
         model = glm::scale(model, glm::vec3(0.05f));
         ourShader.setMat4("model", model);
         mapleTreeModel.Draw(ourShader);
+
+        // nimbus
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-4.0f, -8.0f + yCircle, -9.5f));
+        model = glm::scale(model, glm::vec3(0.25f));
+        ourShader.setMat4("model", model);
+        nimbusModel.Draw(ourShader);
 
 //        if (programState->ImGuiEnabled)
 //            DrawImGui(programState);

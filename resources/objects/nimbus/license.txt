@@ -1,0 +1,11 @@
+Model Information:
+* title:	Nimbus 2,000
+* source:	https://sketchfab.com/3d-models/nimbus-2000-0d9dce12f44f4aa49c229c5045d1d0d0
+* author:	Creation (https://sketchfab.com/CreationVibe)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Nimbus 2,000" (https://sketchfab.com/3d-models/nimbus-2000-0d9dce12f44f4aa49c229c5045d1d0d0) by Creation (https://sketchfab.com/CreationVibe) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

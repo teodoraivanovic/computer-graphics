@@ -1,0 +1,588 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 100,
+      "max": [
+        2.0501465797424316,
+        0.18295282125473022,
+        0.21641768515110016
+      ],
+      "min": [
+        -1.7812511920928955,
+        -0.18276043236255646,
+        -0.26169687509536743
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1200,
+      "componentType": 5126,
+      "count": 100,
+      "max": [
+        0.8900596499443054,
+        0.9999932646751404,
+        0.9997411370277405
+      ],
+      "min": [
+        -0.9940428137779236,
+        -0.9999924898147583,
+        -0.9996632933616638
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 100,
+      "max": [
+        0.9940308928489685,
+        0.9895972013473511
+      ],
+      "min": [
+        0.007453024387359619,
+        0.010392695665359497
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 474,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 2400,
+      "componentType": 5126,
+      "count": 55,
+      "max": [
+        -0.5365353226661682,
+        0.2817519009113312,
+        -0.12204775214195251
+      ],
+      "min": [
+        -0.9358197450637817,
+        -0.2817519009113312,
+        -0.23791053891181946
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3060,
+      "componentType": 5126,
+      "count": 55,
+      "max": [
+        0.9168716669082642,
+        0.9993735551834106,
+        0.858210563659668
+      ],
+      "min": [
+        -0.9999290704727173,
+        -0.9993735551834106,
+        -0.9989463090896606
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 800,
+      "componentType": 5126,
+      "count": 55,
+      "max": [
+        0.9867559671401978,
+        0.9840414524078369
+      ],
+      "min": [
+        0.01577295921742916,
+        0.015840083360671997
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 1896,
+      "componentType": 5125,
+      "count": 234,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3720,
+      "componentType": 5126,
+      "count": 9,
+      "max": [
+        0.5,
+        0.4371473789215088,
+        0.2155998945236206
+      ],
+      "min": [
+        -0.2678106427192688,
+        -0.3737415075302124,
+        -0.10708704590797424
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3828,
+      "componentType": 5126,
+      "count": 9,
+      "max": [
+        0.0,
+        0.6865727305412292,
+        0.999999463558197
+      ],
+      "min": [
+        -3.745297050272711e-08,
+        -0.0010292308870702982,
+        0.7270610928535461
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1240,
+      "componentType": 5126,
+      "count": 9,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 2832,
+      "componentType": 5125,
+      "count": 24,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3936,
+      "componentType": 5126,
+      "count": 9,
+      "max": [
+        0.5,
+        0.4371473789215088,
+        0.2155998945236206
+      ],
+      "min": [
+        -0.2678106427192688,
+        -0.3737415075302124,
+        -0.10708704590797424
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 4044,
+      "componentType": 5126,
+      "count": 9,
+      "max": [
+        0.0,
+        0.6865727305412292,
+        0.999999463558197
+      ],
+      "min": [
+        -3.745297050272711e-08,
+        -0.0010292308870702982,
+        0.7270610928535461
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1312,
+      "componentType": 5126,
+      "count": 9,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 2928,
+      "componentType": 5125,
+      "count": 24,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Creation (https://sketchfab.com/CreationVibe)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/nimbus-2000-0d9dce12f44f4aa49c229c5045d1d0d0",
+      "title": "Nimbus 2,000"
+    },
+    "generator": "Sketchfab-13.1.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 3024,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1384,
+      "byteOffset": 3024,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4152,
+      "byteOffset": 4408,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 8560,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/Material.001_baseColor.png"
+    },
+    {
+      "uri": "textures/Material.002_baseColor.png"
+    },
+    {
+      "uri": "textures/Nimbus_Logo_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Material.001",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Material.002",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "alphaCutoff": 0.010666699174702246,
+      "alphaMode": "MASK",
+      "doubleSided": true,
+      "emissiveFactor": [
+        0.178862,
+        0.08247809999999992,
+        0.026377799999999996
+      ],
+      "name": "Nimbus_Logo",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 2
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Nimbus_Material.001_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Foot Thingies_Material.002_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Nimbus Logo_Nimbus Logo_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Nimbus Logo.001_Nimbus Logo_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 13,
+            "POSITION": 12,
+            "TEXCOORD_0": 14
+          },
+          "indices": 15,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Nimbus 2000.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        7,
+        9
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.629206793918314e-05,
+        -99.99999999999868,
+        0.0,
+        0.0,
+        99.99999999999868,
+        -1.629206793918314e-05,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Nimbus"
+    },
+    {
+      "mesh": 0,
+      "name": "Nimbus_Material.001_0"
+    },
+    {
+      "children": [
+        6
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        -2.646977960169688e-23,
+        0.0,
+        0.0,
+        2.646977960169688e-23,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Foot Thingies"
+    },
+    {
+      "mesh": 1,
+      "name": "Foot Thingies_Material.002_0"
+    },
+    {
+      "children": [
+        8
+      ],
+      "matrix": [
+        0.10556234419345856,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.02605071245374828,
+        0.07434514650905877,
+        0.0,
+        0.0,
+        -0.12452925650278145,
+        -0.04363534145215169,
+        0.0,
+        1.958160400390625,
+        -0.003907379694283009,
+        0.17835170030593872,
+        1.0
+      ],
+      "name": "Nimbus Logo"
+    },
+    {
+      "mesh": 2,
+      "name": "Nimbus Logo_Nimbus Logo_0"
+    },
+    {
+      "children": [
+        10
+      ],
+      "matrix": [
+        -0.10556234419345176,
+        -3.4396584853813896e-08,
+        1.59394705161322e-08,
+        0.0,
+        2.737409308148939e-09,
+        0.026050697091658456,
+        0.074345151891969,
+        0.0,
+        -4.716554292768189e-08,
+        0.12452926551923102,
+        -0.043635315720412196,
+        0.0,
+        1.9825615882873535,
+        0.0038113503251224756,
+        0.17835170030593872,
+        1.0
+      ],
+      "name": "Nimbus Logo.001"
+    },
+    {
+      "mesh": 3,
+      "name": "Nimbus Logo.001_Nimbus Logo_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 1,
+      "source": 2
+    }
+  ]
+}
