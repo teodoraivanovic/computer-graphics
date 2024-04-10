@@ -18,7 +18,7 @@
 #### Group B:
 
 - [ ] Point Shadows
-- [ ] Normal Mapping, Parallax Mapping
+- [x] Normal Mapping, Parallax Mapping
 - [x] HDR, Bloom
 - [ ] Deffered Shading
 - [ ] SSAO

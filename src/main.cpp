@@ -34,6 +34,9 @@ void renderCube();
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// parallex mapping
+float heightScale = 0.1f;
+
 // buttons
 bool blinn = true;
 bool blinnKeyPressed = false;
@@ -202,14 +205,11 @@ int main() {
 
     // loading all textures
     unsigned int diffuseMap = loadTexture(FileSystem::getPath("resources/textures/floor.png").c_str());
-    unsigned int normalMap  = loadTexture(FileSystem::getPath("resources/textures/floor_normal.png").c_str());
     unsigned int diffuseMapGamma = loadTexture(FileSystem::getPath("resources/textures/floor.png").c_str(), true);
+    unsigned int normalMap  = loadTexture(FileSystem::getPath("resources/textures/floor_normal.png").c_str());
+    unsigned int heightMap  = loadTexture(FileSystem::getPath("resources/textures/floor_displacement.png").c_str());
 
     // loading all models
-    // dobby model
-    Model dobbyModel(FileSystem::getPath("resources/objects/dobby/scene.gltf"));
-    dobbyModel.SetShaderTextureNamePrefix("material.");
-
     // floating rock model
     Model rockModel(FileSystem::getPath("resources/objects/floating-rock/scene.gltf"));
     rockModel.SetShaderTextureNamePrefix("material.");
@@ -241,6 +241,10 @@ int main() {
     // nimbus
     Model nimbusModel(FileSystem::getPath("resources/objects/nimbus/scene.gltf"));
     nimbusModel.SetShaderTextureNamePrefix("material.");
+
+    // tree
+    Model treeModel(FileSystem::getPath("resources/objects/tree/scene.gltf"));
+    treeModel.SetShaderTextureNamePrefix("material.");
 
     // skybox setup
     float skyboxVertices[] = {
@@ -346,6 +350,15 @@ int main() {
     lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
     lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
 
+    // trees positions
+    std::vector<glm::vec3> treePositions;
+    treePositions.push_back(glm::vec3(-9.0f, -3.52f, -3.8f));
+    treePositions.push_back(glm::vec3(-7.0f, -3.52f, -4.1f));
+    treePositions.push_back(glm::vec3(-9.7f, -3.52f, -0.8f));
+    treePositions.push_back(glm::vec3(-11.3f, -3.52f, -0.8f));
+    treePositions.push_back(glm::vec3(-9.1f, -3.52f, -1.5f));
+    treePositions.push_back(glm::vec3(-11.4f, -3.52f, -4.3f));
+
     // configure (floating point) framebuffers
     unsigned int hdrFBO;
     glGenFramebuffers(1, &hdrFBO);
@@ -412,6 +425,7 @@ int main() {
     normalShader.use();
     normalShader.setInt("diffuseMap", 0);
     normalShader.setInt("normalMap", 1);
+    normalShader.setInt("depthMap", 2);
 
     // lighting info
     glm::vec3 lightPos(-2.0f, 3.0f, -9.3f);
@@ -436,8 +450,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ourShader.use();
-        pointLight.position = glm::vec3(4.0 * yCircle, 4.0f, 4.0 * zCircle);
-        //pointLight.position = glm::vec3(4.0f, 4.0f, 4.0f);
+        //pointLight.position = glm::vec3(4.0 * yCircle, 4.0f, 4.0 * zCircle);
+        pointLight.position = glm::vec3(5.0f, 10.0f, -5.0f);
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -474,7 +488,7 @@ int main() {
         // TODO fix dobby
         // dobby
 //        model = glm::mat4(1.0f);
-//        model = glm::translate(model, glm::vec3(-16.0f, 10.25f, -11.0f));
+//        model = glm::translate(model, glm::vec3(-9.0f, 4.0f, -1.8f));
 //        model = glm::scale(model, glm::vec3(0.007f));
 //        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));  // it's laying on the ground, so it must be rotated
 //        ourShader.setMat4("model", model);
@@ -557,6 +571,32 @@ int main() {
         ourShader.setMat4("model", model);
         nimbusModel.Draw(ourShader);
 
+        // logo
+//        model = glm::mat4(1.0f);
+//        model = glm::translate(model, glm::vec3(5.0f, 10.0f, -5.0f));
+//        model = glm::scale(model, glm::vec3(4.0f));
+//        model = glm::rotate(model, glm::radians(130.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+//        ourShader.setMat4("model", model);
+//        logoModel.Draw(ourShader);
+
+
+        // trees
+        for(unsigned int i = 0; i < treePositions.size(); ++i) {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(treePositions[i]));
+            model = glm::scale(model, glm::vec3(0.13f));
+            model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+            ourShader.setMat4("model", model);
+            treeModel.Draw(ourShader);
+        }
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-9.0f, -3.52f, -3.8f));
+        model = glm::scale(model, glm::vec3(0.13f));
+        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        ourShader.setMat4("model", model);
+        treeModel.Draw(ourShader);
+
+
 //        if (programState->ImGuiEnabled)
 //            DrawImGui(programState);
 
@@ -589,7 +629,7 @@ int main() {
 
         glDisable(GL_CULL_FACE);
 
-        // configure view/projection matrices for normalShader
+        // configure view/projection matrices for floor
         projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         view = programState->camera.GetViewMatrix();
         normalShader.use();
@@ -602,11 +642,14 @@ int main() {
         normalShader.setMat4("model", model);
         normalShader.setVec3("viewPos", programState->camera.Position);
         normalShader.setVec3("lightPos", lightPos);
+        normalShader.setFloat("heightScale", heightScale);
         normalShader.setInt("gamma", gammaOn);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gammaOn ? diffuseMapGamma : diffuseMap);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalMap);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, heightMap);
         renderFloor();
 
 //        // render light source (simply re-renders a smaller plane at the light's position for debugging/visualization)
